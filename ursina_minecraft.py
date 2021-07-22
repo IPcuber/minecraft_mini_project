@@ -1,4 +1,5 @@
 from ursina import *
+from ursina.camera import Camera
 from ursina.prefabs.first_person_controller import FirstPersonController
 
 app = Ursina()
@@ -15,6 +16,25 @@ window.fps_counter.enabled = False
 window.exit_button.visible = False
 
 
+
+class Hotbar(Entity):
+    def __init__(self, position = (0,0,0)):
+        super().__init__(
+            parent = camera.ui,
+            model = 'quad',
+            texture = 'hotbar.png',
+            position = position,
+            scale = 0.09)
+
+class Item(Entity):
+    def __init__(self, position = (0,0,0), texture = None):
+        super().__init__(
+            parent = camera.ui,
+            model = 'quad',
+            texture = texture,
+            position = position,
+            scale = 0.07)
+
 def update():
     global block_pick
 
@@ -23,10 +43,21 @@ def update():
     else:
         hand.passive()
 
-    if held_keys['1']: block_pick = 1
-    if held_keys['2']: block_pick = 2
-    if held_keys['3']: block_pick = 3
-    if held_keys['4']: block_pick = 4
+    if held_keys['1']: 
+        highlight.position = (-0.11,-0.4,0)
+        block_pick = 1
+
+    if held_keys['2']:
+        highlight.position = (-0.02,-0.4,0)
+        block_pick = 2
+
+    if held_keys['3']: 
+        highlight.position = (0.07,-0.4,0)
+        block_pick = 3
+    
+    if held_keys['4']: 
+        highlight.position = (0.16,-0.4,0)
+        block_pick = 4
 
 class Voxel(Button):
     def __init__(self, position = (0,0,0), texture = grass_texture):
@@ -75,20 +106,42 @@ class Hand(Entity):
             texture = 'arm_texture.png',
             scale = 0.2,
             rotation = Vec3(150, -10, 0),
-            position = Vec2(0.45,-0.6))
+            position = Vec2(0.8,-0.6))
 
     def active(self):
         self.position = Vec2(0.3,-0.5)
     
     def passive(self):
-        self.position = Vec2(0.45,-0.6)
+        self.position = Vec2(0.8,-0.6)
 
-for z in range(20):
-    for x in range(20):
+
+for z in range(100):
+    for x in range(100):
         voxel = Voxel((x,0,z))
+
 
 player = FirstPersonController()
 sky = Sky()
 hand = Hand()
+
+x = -0.2
+for i in range(4):
+    x += .09
+    hotbar = Hotbar((x,-0.4,0))
+
+x = -0.2
+for i in range(4):
+    if i == 0:
+        texture = 'grass.png'
+    elif i == 1:
+        texture = 'Stone.png'
+    elif i == 2:
+        texture = 'Brick.png'
+    else:
+        texture = 'dirt.png'
+    x += .09
+    item = Item((x,-0.4,0), texture)
+
+highlight = Entity(model = 'quad', color = color.rgba(255,255,255,120), parent = camera.ui, scale = 0.08, position = (-0.11,-0.4,0))
 
 app.run()
