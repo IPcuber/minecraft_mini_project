@@ -1,6 +1,9 @@
 from ursina import *
 from ursina.camera import Camera
 from ursina.prefabs.first_person_controller import FirstPersonController
+import time
+import multiprocessing
+import random
 
 app = Ursina()
 grass_texture = load_texture('grass_block.png')
@@ -67,7 +70,7 @@ class Voxel(Button):
             model = 'block.obj',
             origin_y = 0.5,
             texture = texture,
-            color = color.color(0,0,random.uniform(0.9,1)),
+            color = color.white,
             highlight_color = color.white,
             scale = 0.5)
 
@@ -95,7 +98,7 @@ class Sky(Entity):
             parent = scene,
             model = 'sphere',
             texture = 'skybox.png',
-            scale = 150,
+            scale = 300,
             double_sided = True)
 
 class Hand(Entity):
@@ -115,12 +118,16 @@ class Hand(Entity):
         self.position = Vec2(0.8,-0.6)
 
 
-for z in range(100):
-    for x in range(100):
-        voxel = Voxel((x,0,z))
+for x in range(16):
+    for z in range(16):
+        for y in range(15):
+            voxel = Voxel((x,y,z))
 
 
-player = FirstPersonController()
+
+
+
+
 sky = Sky()
 hand = Hand()
 
@@ -144,4 +151,17 @@ for i in range(4):
 
 highlight = Entity(model = 'quad', color = color.rgba(255,255,255,120), parent = camera.ui, scale = 0.08, position = (-0.11,-0.4,0))
 
+player = FirstPersonController()
+player.x = 8
+player.z = 8
+player.y = 18
+if player.y == -10:
+    player.y = 10
+
 app.run()
+
+#if __name__ == '__main__':
+    #for i in range(20):
+        #p = multiprocessing.Process(target=multiprocessing_func, args=(i,))
+    #p.start()
+    #p.join()
